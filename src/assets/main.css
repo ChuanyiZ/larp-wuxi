@@ -3,7 +3,8 @@
 @layer base {
   :root {
     font-family:
-      'Noto Serif SC', 'Noto Serif CJK SC', 'Songti SC', 'STSong', 'Times New Roman', serif;
+      'Source Han Sans SC', 'Noto Sans CJK SC', 'PingFang SC', 'Hiragino Sans GB',
+      'Microsoft YaHei', sans-serif;
   }
 }
 
@@ -21,23 +22,12 @@
   --color-paper-950: oklch(0.178 0.012 91.79);
 }
 
-@font-face {
-  font-family: 'Source Han Serif CN';
-  src:
-    local('Source Han Serif CN'),
-    local('Source Han Serif SC'),
-    local('Source Han Serif TC'),
-    local('Source Han Serif TW'),
-    local('Source Han Serif'),
-    local('Noto Serif CJK SC'),
-    local('Songti SC'),
-    local('SimSong'),
-    url('https://cdn.jsdelivr.net/gh/yihui/cron/fonts/SourceHanSerifCN-Regular-yihui.woff2')
-      format('woff2');
-}
-
 @counter-style chinese-traditional {
   system: fixed;
-  symbols: "壹" "貳" "參" "肆" "伍" "陸" "柒" "捌" "玖";
-  suffix: "、";
+  symbols: '壹' '貳' '參' '肆' '伍' '陸' '柒' '捌' '玖';
+}
+
+@counter-style chinese-ten-stems {
+  system: fixed;
+  symbols: '甲' '乙' '丙' '丁' '戊' '己' '庚' '辛' '壬' '癸';
 }

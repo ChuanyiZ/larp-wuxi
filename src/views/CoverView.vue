@@ -24,14 +24,12 @@ const toTasks = () => router.push('/tasks')
       </button>
     </header>
 
-    <main
-      class="flex-1 flex items-center justify-center"
-      style="writing-mode: vertical-rl"
-    >
+    <main class="flex-1 flex items-center justify-center" style="writing-mode: vertical-rl">
       <h1
-        class="text-4xl tracking-wider border-t-2 border-b-2 border-white/20 pb-2 m-0 whitespace-nowrap cursor-default"
+        class="text-4xl tracking-wider pb-2 m-0 whitespace-nowrap cursor-default font-bold"
+        style="font-family: 'Source Han Serif CN VF', serif"
       >
-        无锡急差
+        【无锡急差】
       </h1>
     </main>
   </div>
