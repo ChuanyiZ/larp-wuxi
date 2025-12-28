@@ -26,7 +26,7 @@ onMounted(() => {
   </p>
 
   <div ref="first" class="vertical-container drop-shadow-lg/50 drop-shadow-paper-500">
-    <div class="vertical-chinese h-80 bg-paper-100">
+    <div class="vertical-chinese h-80 bg-paper-100 dark:bg-paper-700">
       <p class="ps-0!"><b>巡按南直隶监察御史 沈</b></p>
       <p class="ps-0!"><b>为稽查私盐影射盐引等弊事 札付松江府</b></p>
       <p class="indent-[-2em]!">
@@ -53,7 +53,7 @@ onMounted(() => {
   <p>限期十日，看起来还好。你又展开了第二份松江府的牒文</p>
 
   <div ref="second" class="vertical-container drop-shadow-lg/50 drop-shadow-paper-500">
-    <div class="vertical-chinese h-80 bg-paper-100">
+    <div class="vertical-chinese h-80 bg-paper-100 dark:bg-paper-700">
       <p class="ps-0!"><b>松江府为稽查私盐影射盐引等弊事牒仰上海县遵行事</b></p>
 
       <p class="indent-[-2em]!">
@@ -75,7 +75,7 @@ onMounted(() => {
   <p>这下好了，须一日来回，果然是中彩了。赶紧看看张知县在差票里有何吩咐吧。</p>
 
   <div ref="third" class="vertical-container drop-shadow-lg/50 drop-shadow-paper-500">
-    <div class="vertical-chinese h-80 bg-paper-100">
+    <div class="vertical-chinese h-80 bg-paper-100 dark:bg-paper-700">
       <p class="ps-0!"><b>上海县 快班差役 万某 收执</b></p>
 
       <p class="indent-[-2em]!">

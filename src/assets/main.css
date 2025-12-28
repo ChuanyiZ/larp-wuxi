@@ -1,14 +1,35 @@
 @import 'tailwindcss';
 
+/* @variant dark (&[data-theme='dark']); */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 @layer base {
   :root {
     font-family:
       'Source Han Sans SC', 'Noto Sans CJK SC', 'PingFang SC', 'Hiragino Sans GB',
       'Microsoft YaHei', sans-serif;
+    color-scheme: light;
+    background-color: var(--color-surface);
+    color: var(--color-foreground);
+  }
+
+  :root[data-theme='dark'] {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-foreground);
   }
 }
 
 @theme {
+  --color-surface: oklch(0.98 0.01 260);
+  --color-surface-strong: oklch(0.94 0.02 260);
+  --color-foreground: var(--color-paper-950);
+  --color-border: oklch(0.86 0.01 260);
+  --color-accent: oklch(0.55 0.18 230);
+
   --color-paper-50: oklch(0.974 0.009 84.52);
   --color-paper-100: oklch(0.948 0.018 81.31);
   --color-paper-200: oklch(0.894 0.041 81.69);
@@ -20,6 +41,14 @@
   --color-paper-800: oklch(0.328 0.022 84.48);
   --color-paper-900: oklch(0.233 0.016 84.47);
   --color-paper-950: oklch(0.178 0.012 91.79);
+}
+
+:root[data-theme='dark'] {
+  --color-surface: oklch(0.18 0.02 260);
+  --color-surface-strong: oklch(0.24 0.03 260);
+  --color-foreground: var(--color-paper-100);
+  --color-border: oklch(0.36 0.02 260);
+  --color-accent: oklch(0.72 0.18 230);
 }
 
 @counter-style chinese-traditional {

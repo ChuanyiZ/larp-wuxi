@@ -1,28 +1,12 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
-
-const toOpening = () => router.push('/opening')
-const toTasks = () => router.push('/tasks')
+import AppHeader from '@/components/AppHeader.vue'
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-[#032b52] to-[#021827] text-white flex flex-col">
-    <header class="flex items-center px-5 py-3 bg-white/5 backdrop-blur gap-2">
-      <button
-        class="bg-transparent border-b border-dotted border-white/70 text-white cursor-pointer font-semibold px-3 py-1 hover:bg-white/5"
-        @click="toOpening"
-      >
-        开场
-      </button>
-      <button
-        class="bg-transparent border-b border-dotted border-white/70 text-white cursor-pointer font-semibold px-3 py-1 hover:bg-white/5"
-        @click="toTasks"
-      >
-        差务
-      </button>
-    </header>
+  <div
+    class="min-h-screen flex flex-col text-foreground bg-gradient-to-b from-[#e5edf8] to-[#c8d5ea] dark:from-[#032b52] dark:to-[#021827] dark:text-white transition-colors duration-300"
+  >
+    <AppHeader />
 
     <main class="flex-1 flex items-center justify-center" style="writing-mode: vertical-rl">
       <h1
