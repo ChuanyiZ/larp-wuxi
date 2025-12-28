@@ -5,9 +5,12 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/cover',
       component: () => import('../views/BaseView.vue'),
       children: [
+        {
+          path: '',
+          redirect: '/cover',
+        },
         {
           path: 'cover',
           name: 'cover',
@@ -18,7 +21,12 @@ const router = createRouter({
           name: 'opening',
           component: () => import('../views/OpeningView.vue'),
         },
-      ]
+        {
+          path: 'tasks',
+          name: 'tasks',
+          component: () => import('../views/TaskView.vue'),
+        },
+      ],
     },
   ],
 })
