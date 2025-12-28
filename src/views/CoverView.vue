@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppFooter from '@/components/AppFooter.vue'
 import AppHeader from '@/components/AppHeader.vue'
 </script>
 
@@ -16,5 +17,7 @@ import AppHeader from '@/components/AppHeader.vue'
         【无锡急差】
       </h1>
     </main>
+
+    <AppFooter />
   </div>
 </template>
