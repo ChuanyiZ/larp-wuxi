@@ -1,0 +1,43 @@
+@import 'tailwindcss';
+
+@layer base {
+  :root {
+    font-family:
+      'Noto Serif SC', 'Noto Serif CJK SC', 'Songti SC', 'STSong', 'Times New Roman', serif;
+  }
+}
+
+@theme {
+  --color-paper-50: oklch(0.974 0.009 84.52);
+  --color-paper-100: oklch(0.948 0.018 81.31);
+  --color-paper-200: oklch(0.894 0.041 81.69);
+  --color-paper-300: oklch(0.802 0.053 83.33);
+  --color-paper-400: oklch(0.708 0.047 83.81);
+  --color-paper-500: oklch(0.612 0.041 82.88);
+  --color-paper-600: oklch(0.518 0.034 83.49);
+  --color-paper-700: oklch(0.423 0.029 85.72);
+  --color-paper-800: oklch(0.328 0.022 84.48);
+  --color-paper-900: oklch(0.233 0.016 84.47);
+  --color-paper-950: oklch(0.178 0.012 91.79);
+}
+
+@font-face {
+  font-family: 'Source Han Serif CN';
+  src:
+    local('Source Han Serif CN'),
+    local('Source Han Serif SC'),
+    local('Source Han Serif TC'),
+    local('Source Han Serif TW'),
+    local('Source Han Serif'),
+    local('Noto Serif CJK SC'),
+    local('Songti SC'),
+    local('SimSong'),
+    url('https://cdn.jsdelivr.net/gh/yihui/cron/fonts/SourceHanSerifCN-Regular-yihui.woff2')
+      format('woff2');
+}
+
+@counter-style chinese-traditional {
+  system: fixed;
+  symbols: "壹" "貳" "參" "肆" "伍" "陸" "柒" "捌" "玖";
+  suffix: "、";
+}
