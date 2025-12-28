@@ -137,13 +137,12 @@ onBeforeUnmount(() => {
 <style scoped>
 .nav-link {
   padding: 0.125rem 0.25rem;
-  border-bottom: 1px dotted currentColor;
-  font-weight: 600;
+  border-bottom: 1px solid transparent;
   text-decoration: none;
   cursor: pointer;
   transition:
-    background-color 150ms ease,
-    border-color 150ms ease;
+    background-color 250ms ease,
+    border-color 250ms ease;
 }
 
 .nav-link:hover {
@@ -151,7 +150,8 @@ onBeforeUnmount(() => {
 }
 
 .nav-link[data-active='true'] {
-  border-bottom-style: solid;
+  font-weight: 600;
+  border-bottom: 1px solid currentColor;
 }
 
 .ghost-button {

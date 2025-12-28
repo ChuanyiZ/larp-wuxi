@@ -6,16 +6,19 @@ const router = createRouter({
     {
       path: '/',
       redirect: '/cover',
-    },
-    {
-      path: '/cover',
-      name: 'cover',
-      component: () => import('../views/CoverView.vue'),
-    },
-    {
-      path: '/opening',
-      name: 'opening',
-      component: () => import('../views/OpeningView.vue'),
+      component: () => import('../views/BaseView.vue'),
+      children: [
+        {
+          path: 'cover',
+          name: 'cover',
+          component: () => import('../views/CoverView.vue'),
+        },
+        {
+          path: 'opening',
+          name: 'opening',
+          component: () => import('../views/OpeningView.vue'),
+        },
+      ]
     },
   ],
 })

@@ -1,6 +1,5 @@
 @import 'tailwindcss';
 
-/* @variant dark (&[data-theme='dark']); */
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @layer base {
