@@ -5,14 +5,14 @@ import AppHeader from '@/components/AppHeader.vue'
 
 <template>
   <div
-    class="min-h-dvh flex flex-col m-auto bg-surface text-foreground transition-colors duration-300"
+    class="min-h-svh flex flex-col justify-between m-auto bg-surface text-foreground transition-colors duration-300"
   >
     <AppHeader />
 
     <router-view v-slot="{ Component }">
-        <Transition name="fade" mode="out-in">
-            <component :is="Component" />
-        </Transition>
+      <Transition name="fade" mode="out-in">
+        <component :is="Component" />
+      </Transition>
     </router-view>
 
     <AppFooter />
@@ -20,10 +20,12 @@ import AppHeader from '@/components/AppHeader.vue'
 </template>
 
 <style scoped>
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 250ms;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 150ms;
 }
-.fade-enter-from, .fade-leave-to {
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 </style>
