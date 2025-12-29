@@ -40,6 +40,8 @@
   --color-paper-800: oklch(0.328 0.022 84.48);
   --color-paper-900: oklch(0.233 0.016 84.47);
   --color-paper-950: oklch(0.178 0.012 91.79);
+
+  --font-songti: 'Source Han Serif CN VF', serif;
 }
 
 :root[data-theme='dark'] {

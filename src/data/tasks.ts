@@ -20,6 +20,7 @@ export interface TaskMain extends Task {
 
 export interface TaskSide extends Task {
   taskType: 'side'
+  tag: string
   reward?: number
 }
 
@@ -90,6 +91,7 @@ export const tasks: (TaskMain | TaskSide | TaskReport)[] = [
       '到梅园（编者注：或你路线中更顺的赏蜡梅点），取“蜡梅”作冬令物证。梅园蜡梅通常冬季开放，盛花期多在冬月腊月',
     status: 'todo',
     taskType: 'side',
+    tag: '梅',
     reward: 50,
     area: '梅园',
   },
@@ -99,6 +101,7 @@ export const tasks: (TaskMain | TaskSide | TaskReport)[] = [
     description: '寻一处糕团店/作坊，买团子/青白团子/年糕等“冬令年礼”',
     status: 'todo',
     taskType: 'side',
+    tag: '糕',
     reward: 20,
     area: '本地小店',
   },
@@ -108,6 +111,7 @@ export const tasks: (TaskMain | TaskSide | TaskReport)[] = [
     description: '到街头巷里，寻一处做无锡本地口味的面食',
     status: 'todo',
     taskType: 'side',
+    tag: '面',
     reward: 30,
     area: '本地小店',
   },
@@ -117,6 +121,7 @@ export const tasks: (TaskMain | TaskSide | TaskReport)[] = [
     description: '寻一处小馄饨或“馄饨面”之铺，点一份小食',
     status: 'todo',
     taskType: 'side',
+    tag: '馄',
     reward: 30,
     area: '菜市场',
   },
@@ -126,6 +131,7 @@ export const tasks: (TaskMain | TaskSide | TaskReport)[] = [
     description: '寻一处做鳝鱼菜的店家，取一份可分食的小份',
     status: 'todo',
     taskType: 'side',
+    tag: '鳝',
     reward: 50,
     area: '本地小店',
   },
@@ -135,18 +141,19 @@ export const tasks: (TaskMain | TaskSide | TaskReport)[] = [
     description: '寻一件能代表无锡的手信小物（惠山泥人、明信片、风物小挂件皆可）',
     status: 'todo',
     taskType: 'side',
+    tag: '礼',
     area: '手信店',
   },
 ]
 
 export const statusLabels: Record<TaskStatus, string> = {
-  'todo': '待办',
+  todo: '待办',
   'in-progress': '进行中',
-  'done': '已完成',
+  done: '已完成',
 }
 
 export const taskTypeLabels: Record<TaskType, string> = {
-  'main': '主线',
-  'side': '支线',
-  'report': '回报',
+  main: '主线',
+  side: '支线',
+  report: '回报',
 }

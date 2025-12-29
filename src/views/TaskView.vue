@@ -205,7 +205,22 @@ const summary = computed(() => {
               >
                 {{ taskTypeLabels[task.taskType] }}
               </span>
-              <h2 class="text-lg font-semibold leading-tight">{{ task.title }}</h2>
+              <div class="text-lg font-semibold leading-tight flex items-center gap-2">
+                <div
+                  v-if="task.taskType === 'main'"
+                  class="px-0.5 border-2 rounded-md border-red-700 text-red-700 dark:border-red-500 dark:text-red-500 text-sm font-bold font-songti"
+                >
+                  {{ task.seal }}
+                </div>
+                <div
+                  v-else-if="task.taskType === 'side'"
+                  class="px-0.5 rounded text-sm font-semibold font-songti"
+                  :class="typeTone[task.taskType]"
+                >
+                  {{ task.tag }}
+                </div>
+                {{ task.title }}
+              </div>
             </div>
             <div class="flex items-center gap-1">
               <span
