@@ -138,3 +138,15 @@ export const tasks: (TaskMain | TaskSide | TaskReport)[] = [
     area: '手信店',
   },
 ]
+
+export const statusLabels: Record<TaskStatus, string> = {
+  'todo': '待办',
+  'in-progress': '进行中',
+  'done': '已完成',
+}
+
+export const taskTypeLabels: Record<TaskType, string> = {
+  'main': '主线',
+  'side': '支线',
+  'report': '回报',
+}
