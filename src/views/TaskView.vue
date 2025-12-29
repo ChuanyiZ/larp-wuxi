@@ -1,7 +1,15 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { statusLabels, type TaskStatus } from '@/data/tasks'
+import { computed, ref, type FunctionalComponent } from 'vue'
+import { type TaskStatus } from '@/data/tasks'
 import { useTaskStore } from '@/stores/tasks'
+import {
+  EllipsisHorizontalCircleIcon as TodoIcon,
+  PlayCircleIcon as OngoiningIcon,
+  CheckCircleIcon as DoneIcon,
+  MapPinIcon,
+  CurrencyYenIcon,
+  ClockIcon,
+} from '@heroicons/vue/24/outline'
 
 type Filter = TaskStatus | 'all'
 
@@ -30,6 +38,12 @@ const statusTone: Record<TaskStatus, string> = {
   done: 'text-emerald-700 dark:text-emerald-200',
 }
 
+const statusIcons: Record<TaskStatus, FunctionalComponent> = {
+  todo: TodoIcon,
+  'in-progress': OngoiningIcon,
+  done: DoneIcon,
+}
+
 const statusOptions: { value: TaskStatus; label: string }[] = [
   { value: 'todo', label: '待办' },
   { value: 'in-progress', label: '进行中' },
@@ -42,12 +56,11 @@ const updateStatus = (id: string, status: TaskStatus) => {
 </script>
 
 <template>
-  <section class="max-w-4xl mx-auto px-4 py-6 md:py-8">
+  <section class="flex-grow min-w-1/2 mx-auto px-4 py-6 md:py-8">
     <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
       <div>
         <p class="text-sm uppercase tracking-[0.2em] opacity-60 mb-1">差务清单</p>
         <h1 class="text-2xl font-bold">当前差务</h1>
-        <p class="text-sm opacity-70">预设任务，无增删；可按状态筛选并隐藏已完成。</p>
       </div>
 
       <div class="flex flex-wrap gap-2 items-center">
@@ -55,12 +68,14 @@ const updateStatus = (id: string, status: TaskStatus) => {
           <input v-model="hideDone" type="checkbox" class="size-4" />
           隐藏已完成
         </label>
-        <div class="flex items-center rounded-full border border-border/70 dark:border-border/40 overflow-hidden">
+        <div
+          class="flex items-center rounded-full border border-border/70 dark:border-border/40 overflow-hidden"
+        >
           <button
             v-for="option in filterOptions"
             :key="option.value"
             type="button"
-            class="px-3 py-1 text-sm transition-colors"
+            class="px-3 py-1 text-sm transition-colors duration-200 flex items-center gap-1"
             :class="[
               filter === option.value
                 ? 'bg-surface-strong/80 dark:bg-surface-strong/60 font-semibold'
@@ -68,6 +83,12 @@ const updateStatus = (id: string, status: TaskStatus) => {
             ]"
             @click="filter = option.value"
           >
+            <component
+              v-if="option.value !== 'all'"
+              :is="statusIcons[option.value]"
+              :class="statusTone[option.value]"
+              class="size-4 inline"
+            />
             {{ option.label }}
           </button>
         </div>
@@ -76,37 +97,38 @@ const updateStatus = (id: string, status: TaskStatus) => {
 
     <div
       class="grid gap-3"
-      :class="visibleTasks.length === 0 ? 'border border-dashed border-border/60 dark:border-border/40 rounded-lg p-6 text-center' : ''"
+      :class="
+        visibleTasks.length === 0
+          ? 'border border-dashed border-border/60 dark:border-border/40 rounded-lg p-6 text-center'
+          : ''
+      "
     >
-      <p v-if="visibleTasks.length === 0" class="opacity-70">
-        没有符合条件的任务。
-      </p>
+      <p v-if="visibleTasks.length === 0" class="opacity-70">没有符合条件的任务。</p>
 
-      <article
+      <div
         v-for="task in visibleTasks"
         :key="task.id"
         class="rounded-lg border border-border/70 dark:border-border/40 bg-surface-strong/50 dark:bg-surface-strong/30 p-4 flex flex-col gap-2"
       >
         <div class="flex items-start justify-between gap-3">
           <div>
-            <p class="text-xs uppercase tracking-[0.18em] opacity-60">
-              {{ task.area ?? '未指定地点' }}
-            </p>
             <h2 class="text-lg font-semibold leading-tight">{{ task.title }}</h2>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-1">
             <span
-              class="text-xs font-semibold px-2 py-1 rounded-full bg-white/50 dark:bg-black/20 border border-border/60 dark:border-border/40"
+              class="text-xs font-semibold px-2 py-1 rounded-full"
               :class="statusTone[task.status]"
             >
-              {{ statusLabels[task.status] }}
+              <component :is="statusIcons[task.status]" class="size-4 inline" />
             </span>
             <select
               :id="`status-${task.id}`"
-              class="text-xs border border-border/70 dark:border-border/40 rounded-full px-2 py-1 bg-transparent"
+              class="text-xs border border-border/70 dark:border-border/40 rounded-lg px-1 py-.5 bg-current/5"
               :value="task.status"
               aria-label="更新状态"
-              @change="updateStatus(task.id, ($event.target as HTMLSelectElement).value as TaskStatus)"
+              @change="
+                updateStatus(task.id, ($event.target as HTMLSelectElement).value as TaskStatus)
+              "
             >
               <option v-for="option in statusOptions" :key="option.value" :value="option.value">
                 {{ option.label }}
@@ -115,8 +137,21 @@ const updateStatus = (id: string, status: TaskStatus) => {
           </div>
         </div>
         <p v-if="task.description" class="text-sm opacity-80">{{ task.description }}</p>
-        <div class="text-xs text-right opacity-70" v-if="task.due">限期：{{ task.due }}</div>
-      </article>
+        <div class="flex justify-end-safe items-center gap-5 text-xs">
+          <div v-if="task.area" class="flex items-center">
+            <MapPinIcon class="w-4 h-4 me-1" />
+            {{ task.area }}
+          </div>
+          <div v-if="task.reward" class="flex items-center" title="奖励">
+            <CurrencyYenIcon class="w-4 h-4 me-1" />
+            {{ task.reward }}
+          </div>
+          <div v-if="task.due" class="flex items-center">
+            <ClockIcon class="w-4 h-4 me-1" />
+            {{ task.due }}
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </template>
