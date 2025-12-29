@@ -17,6 +17,7 @@ const props = withDefaults(
       { label: '封面', to: '/cover' },
       { label: '开场', to: '/opening' },
       { label: '差务', to: '/tasks' },
+      { label: '工具', to: '/tools' },
     ],
   },
 )
