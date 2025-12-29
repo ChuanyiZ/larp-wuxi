@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { toTraditionalTime } from '@/utils/ancientTime'
 
 const now = ref(new Date())
+const showModern = ref<boolean>(false)
 let timer: number | undefined
 
 const tick = () => {
@@ -18,15 +19,20 @@ onBeforeUnmount(() => {
   if (timer) window.clearInterval(timer)
 })
 
-const timeText = computed(() =>
-  now.value.toLocaleTimeString("zh-CN", { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+const modernText = computed(() =>
+  now.value.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
 )
 
 const traditionalText = computed(() => toTraditionalTime(now.value))
+
+const timeText = computed(() => (showModern.value ? modernText : traditionalText))
 </script>
 
 <template>
-  <div class="flex items-center gap-2 text-sm font-semibold" :title="timeText">
-    <span class="text-xs opacity-80">{{ traditionalText }}</span>
+  <div
+    class="text-sm font-semibold cursor-pointer opacity-80" :class="showModern ? 'min-w-16' : ''"
+    @click="showModern = !showModern"
+  >
+    {{ timeText }}
   </div>
 </template>
