@@ -131,7 +131,7 @@ export const tasks: (TaskMain | TaskSide | TaskReport)[] = [
   },
   {
     id: 'side-souvenir',
-    title: '手信验明：惠山泥人或小物',
+    title: '手信验明',
     description: '寻一件能代表无锡的手信小物（惠山泥人、明信片、风物小挂件皆可）',
     status: 'todo',
     taskType: 'side',
