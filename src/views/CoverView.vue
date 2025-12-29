@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex-grow flex justify-center text-foreground bg-gradient-to-b from-[#e5edf8] to-[#c8d5ea] dark:from-[#032b52] dark:to-[#021827] dark:text-white transition-colors duration-300"
+    class="grow flex justify-center text-foreground bg-linear-to-b from-[#f1eee7] to-[#f8edd8] dark:from-[#032b52] dark:to-[#021827] dark:text-white transition-colors duration-300"
   >
     <div class="mx-auto" style="writing-mode: vertical-rl">
       <h1

@@ -23,8 +23,8 @@
 }
 
 @theme {
-  --color-surface: oklch(0.98 0.01 260);
-  --color-surface-strong: oklch(0.94 0.02 260);
+  --color-surface: oklch(0.99 0.005 85);
+  --color-surface-strong: oklch(0.95 0.01 85);
   --color-foreground: var(--color-paper-950);
   --color-border: oklch(0.86 0.01 260);
   --color-accent: oklch(0.55 0.18 230);
