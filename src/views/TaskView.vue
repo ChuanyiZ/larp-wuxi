@@ -2,6 +2,7 @@
 import { computed, ref, type FunctionalComponent } from 'vue'
 import { taskTypeLabels, statusLabels, type TaskStatus, type TaskType } from '@/data/tasks'
 import { useTaskStore } from '@/stores/tasks'
+import TaskSaveControls from '@/components/TaskSaveControls.vue'
 import {
   EllipsisHorizontalCircleIcon as TodoIcon,
   PlayCircleIcon as OngoiningIcon,
@@ -16,7 +17,10 @@ type TypeFilter = TaskType | 'all'
 
 const statusFilter = ref<StatusFilter>('all')
 const typeFilter = ref<TypeFilter>('all')
+const summaryOpen = ref(true)
 const taskStore = useTaskStore()
+
+const snapshotName = computed(() => taskStore.snapshotName)
 
 const visibleTasks = computed(() =>
   taskStore.tasks.filter((task) => {
@@ -73,6 +77,16 @@ const typeToneText: Record<TaskType, string> = {
 const updateStatus = (id: string, status: TaskStatus) => {
   taskStore.setStatus(id, status)
 }
+
+const summary = computed(() => {
+  const total = taskStore.tasks.length
+  const inProgress = taskStore.tasks.filter((t) => t.status === 'in-progress').length
+  const done = taskStore.tasks.filter((t) => t.status === 'done').length
+  const rewards = taskStore.tasks
+    .filter((t) => t.status === 'done' && typeof t.reward === 'number')
+    .reduce((acc, t) => acc + (t.reward ?? 0), 0)
+  return { total, inProgress, done, rewards }
+})
 </script>
 
 <template>
@@ -128,6 +142,45 @@ const updateStatus = (id: string, status: TaskStatus) => {
       </div>
     </header>
 
+    <div class="mb-4 space-y-3">
+      <button
+        type="button"
+        class="flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-border/60 dark:border-border/40 bg-surface-strong/60 dark:bg-surface-strong/40"
+        @click="summaryOpen = !summaryOpen"
+      >
+        <span>{{ summaryOpen ? '收起' : '展开' }}进度汇总</span>
+      </button>
+
+      <div
+        v-if="summaryOpen"
+        class="grid gap-3 lg:grid-cols-[2fr,3fr] items-start rounded-lg border border-border/60 dark:border-border/40 bg-surface-strong/50 dark:bg-surface-strong/30 p-4"
+      >
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+          <div class="rounded-md bg-white/60 dark:bg-black/10 p-3">
+            <p class="text-xs opacity-70">存档名称</p>
+            <p class="text-base font-semibold break-words">{{ snapshotName }}</p>
+          </div>
+          <div class="rounded-md bg-white/60 dark:bg-black/10 p-3">
+            <p class="text-xs opacity-70">任务总数</p>
+            <p class="text-xl font-semibold">{{ summary.total }}</p>
+          </div>
+          <div class="rounded-md bg-white/60 dark:bg-black/10 p-3">
+            <p class="text-xs opacity-70">进行中</p>
+            <p class="text-xl font-semibold">{{ summary.inProgress }}</p>
+          </div>
+          <div class="rounded-md bg-white/60 dark:bg-black/10 p-3">
+            <p class="text-xs opacity-70">已完成</p>
+            <p class="text-xl font-semibold">{{ summary.done }}</p>
+          </div>
+          <div class="rounded-md bg-white/60 dark:bg-black/10 p-3">
+            <p class="text-xs opacity-70">奖励累计</p>
+            <p class="text-xl font-semibold">{{ summary.rewards }}</p>
+          </div>
+        </div>
+        <TaskSaveControls />
+      </div>
+    </div>
+
     <div
       class="flex flex-col gap-3"
       :class="
@@ -138,65 +191,60 @@ const updateStatus = (id: string, status: TaskStatus) => {
     >
       <p v-if="visibleTasks.length === 0" class="opacity-70">没有符合条件的任务。</p>
 
-      <TransitionGroup
-        name="list"
-        tag="div"
-        class="flex flex-col gap-3"
-        mode="out-in"
-      >
-      <div
-        v-for="task in visibleTasks"
-        :key="task.id"
-        class="rounded-lg border border-border/70 dark:border-border/40 bg-surface-strong/50 dark:bg-surface-strong/30 p-4 flex flex-col gap-2"
-      >
-        <div class="flex items-start justify-between gap-3">
-          <div class="flex flex-col gap-1">
-            <span
-              class="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full w-fit"
-              :class="typeTone[task.taskType]"
-            >
-              {{ taskTypeLabels[task.taskType] }}
-            </span>
-            <h2 class="text-lg font-semibold leading-tight">{{ task.title }}</h2>
+      <TransitionGroup name="list" tag="div" class="flex flex-col gap-3" mode="out-in">
+        <div
+          v-for="task in visibleTasks"
+          :key="task.id"
+          class="rounded-lg border border-border/70 dark:border-border/40 bg-surface-strong/50 dark:bg-surface-strong/30 p-4 flex flex-col gap-2"
+        >
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex flex-col gap-1">
+              <span
+                class="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full w-fit"
+                :class="typeTone[task.taskType]"
+              >
+                {{ taskTypeLabels[task.taskType] }}
+              </span>
+              <h2 class="text-lg font-semibold leading-tight">{{ task.title }}</h2>
+            </div>
+            <div class="flex items-center gap-1">
+              <span
+                class="text-xs font-semibold px-2 py-1 rounded-full"
+                :class="statusTone[task.status]"
+              >
+                <component :is="statusIcons[task.status]" class="size-4 inline" />
+              </span>
+              <select
+                :id="`status-${task.id}`"
+                class="text-xs border border-border/70 dark:border-border/40 rounded-lg px-1 py-.5 bg-current/5"
+                :value="task.status"
+                aria-label="更新状态"
+                @change="
+                  updateStatus(task.id, ($event.target as HTMLSelectElement).value as TaskStatus)
+                "
+              >
+                <option v-for="option in statusOptions" :key="option.value" :value="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+            </div>
           </div>
-          <div class="flex items-center gap-1">
-            <span
-              class="text-xs font-semibold px-2 py-1 rounded-full"
-              :class="statusTone[task.status]"
-            >
-              <component :is="statusIcons[task.status]" class="size-4 inline" />
-            </span>
-            <select
-              :id="`status-${task.id}`"
-              class="text-xs border border-border/70 dark:border-border/40 rounded-lg px-1 py-.5 bg-current/5"
-              :value="task.status"
-              aria-label="更新状态"
-              @change="
-                updateStatus(task.id, ($event.target as HTMLSelectElement).value as TaskStatus)
-              "
-            >
-              <option v-for="option in statusOptions" :key="option.value" :value="option.value">
-                {{ option.label }}
-              </option>
-            </select>
-          </div>
-        </div>
-        <p v-if="task.description" class="text-sm opacity-80">{{ task.description }}</p>
-        <div class="flex justify-end-safe items-center gap-5 text-xs">
-          <div v-if="task.area" class="flex items-center">
-            <MapPinIcon class="w-4 h-4 me-1" />
-            {{ task.area }}
-          </div>
-          <div v-if="task.reward" class="flex items-center" title="奖励">
-            <CurrencyYenIcon class="w-4 h-4 me-1" />
-            {{ task.reward }}
-          </div>
-          <div v-if="task.due" class="flex items-center">
-            <ClockIcon class="w-4 h-4 me-1" />
-            {{ task.due }}
+          <p v-if="task.description" class="text-sm opacity-80">{{ task.description }}</p>
+          <div class="flex justify-end-safe items-center gap-5 text-xs">
+            <div v-if="task.area" class="flex items-center">
+              <MapPinIcon class="w-4 h-4 me-1" />
+              {{ task.area }}
+            </div>
+            <div v-if="task.reward" class="flex items-center" title="奖励">
+              <CurrencyYenIcon class="w-4 h-4 me-1" />
+              {{ task.reward }}
+            </div>
+            <div v-if="task.due" class="flex items-center">
+              <ClockIcon class="w-4 h-4 me-1" />
+              {{ task.due }}
+            </div>
           </div>
         </div>
-      </div>
       </TransitionGroup>
     </div>
   </section>
