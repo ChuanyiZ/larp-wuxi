@@ -7,7 +7,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: 'https://ChuanyiZ.github.io/larp-wuxi',
+  base: '/larp-wuxi/',
   plugins: [
     vue(),
     vueDevTools(),
