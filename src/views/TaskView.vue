@@ -97,6 +97,12 @@ const typeToneText: Record<TaskType, string> = {
   report: 'text-violet-700 dark:text-violet-300',
 }
 
+const styleBadge = 'inline-flex items-center gap-1 bg-white/60 dark:bg-black/10 rounded-full px-3 py-1'
+
+const styleChipMain = 'px-0.5 border-2 rounded-md border-red-700 text-red-700 dark:border-red-500 dark:text-red-500 font-bold'
+
+const styleChipSide = 'px-0.5 rounded font-semibold'
+
 const updateStatus = (id: string, status: TaskStatus) => {
   taskStore.setStatus(id, status)
 }
@@ -211,37 +217,38 @@ const summary = computed(() => {
         class="space-y-3 rounded-lg border border-border/60 dark:border-border/40 bg-surface-strong/50 dark:bg-surface-strong/30 p-2 text-xs lg:text-sm"
       >
         <div class="flex flex-wrap gap-2">
-          <span class="badge">
+          <span :class="styleBadge">
             <span class="opacity-70">累积奖励</span>
             <span class="font-semibold">¥{{ summary.rewards }}</span>
           </span>
-          <span class="badge">
+          <span :class="styleBadge">
             <span class="opacity-70">进行中</span>
             <span class="font-semibold">{{ summary.inProgress }} / {{ summary.total }}</span>
           </span>
-          <span class="badge">
+          <span :class="styleBadge">
             <span class="opacity-70">已完成</span>
             <span class="font-semibold">{{ summary.done }} / {{ summary.total }}</span>
           </span>
-          <span class="badge">
+          <span :class="styleBadge">
             <span class="opacity-70">主线</span>
             <span class="font-semibold">{{ summary.mainDone }} / {{ summary.mainTotal }}</span>
             <span
               v-for="seal in summary.seals"
               :key="seal"
-              class="chip chip-main font-songti text-xs"
+              class="font-songti text-xs"
+              :class="styleChipMain"
             >
               {{ seal }}
             </span>
           </span>
-          <span class="badge">
+          <span :class="styleBadge">
             <span class="opacity-70">支线</span>
             <span class="font-semibold">{{ summary.sideDone }} / {{ summary.sideTotal }}</span>
             <span
               v-for="tag in summary.tags"
               :key="tag"
-              class="chip chip-side font-songti text-xs"
-              :class="typeTone['side']"
+              class="chip font-songti text-xs"
+              :class="typeTone['side'] + ' ' + styleChipSide"
             >
               {{ tag }}
             </span>
@@ -276,13 +283,13 @@ const summary = computed(() => {
                 {{ taskTypeLabels[task.taskType] }}
               </span>
               <div class="text-lg font-semibold leading-tight flex items-center gap-2">
-                <div v-if="task.taskType === 'main'" class="text-sm chip-main font-songti">
+                <div v-if="task.taskType === 'main'" class="text-sm font-songti" :class="styleChipMain">
                   {{ task.seal }}
                 </div>
                 <div
                   v-else-if="task.taskType === 'side'"
-                  class="text-sm chip-side font-songti"
-                  :class="typeTone[task.taskType]"
+                  class="text-sm font-songti"
+                  :class="typeTone[task.taskType] + ' ' + styleChipSide"
                 >
                   {{ task.tag }}
                 </div>
@@ -341,19 +348,5 @@ const summary = computed(() => {
 .list-leave-to {
   opacity: 0;
   transform: translateX(30px);
-}
-
-@import 'tailwindcss';
-
-.badge {
-  @apply inline-flex items-center gap-1 bg-white/60 dark:bg-black/10 rounded-full px-3 py-1;
-}
-
-.chip-main {
-  @apply px-0.5 border-2 rounded-md border-red-700 text-red-700 dark:border-red-500 dark:text-red-500 font-bold;
-}
-
-.chip-side {
-  @apply px-0.5 rounded font-semibold;
 }
 </style>
