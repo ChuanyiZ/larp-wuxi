@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { computed, ref, type FunctionalComponent } from 'vue'
-import { taskTypeLabels, statusLabels, type TaskStatus, type TaskType } from '@/data/tasks'
+import {
+  taskTypeLabels,
+  statusLabels,
+  type TaskStatus,
+  type TaskType,
+  type TaskMain,
+  type TaskSide,
+} from '@/data/tasks'
 import { useTaskStore } from '@/stores/tasks'
 import TaskSaveControls from '@/components/TaskSaveControls.vue'
 import {
@@ -85,7 +92,21 @@ const summary = computed(() => {
   const rewards = taskStore.tasks
     .filter((t) => t.status === 'done' && typeof t.reward === 'number')
     .reduce((acc, t) => acc + (t.reward ?? 0), 0)
-  return { total, inProgress, done, rewards }
+  const seals = Array.from(
+    new Set(
+      taskStore.tasks
+        .filter((t) => t.status === 'done' && 'seal' in t && typeof t.seal === 'string')
+        .map((t) => (t as TaskMain).seal as string),
+    ),
+  )
+  const tags = Array.from(
+    new Set(
+      taskStore.tasks
+        .filter((t) => t.status === 'done' && 'tag' in t)
+        .map((t) => (t as TaskSide).tag as string),
+    ),
+  )
+  return { total, inProgress, done, rewards, seals, tags }
 })
 </script>
 
@@ -158,7 +179,7 @@ const summary = computed(() => {
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
           <div class="rounded-md bg-white/60 dark:bg-black/10 p-3">
             <p class="text-xs opacity-70">存档名称</p>
-            <p class="text-base font-semibold break-words">{{ snapshotName }}</p>
+            <p class="text-base font-semibold wrap-break-words">{{ snapshotName }}</p>
           </div>
           <div class="rounded-md bg-white/60 dark:bg-black/10 p-3">
             <p class="text-xs opacity-70">任务总数</p>
@@ -177,7 +198,32 @@ const summary = computed(() => {
             <p class="text-xl font-semibold">{{ summary.rewards }}</p>
           </div>
         </div>
-        <TaskSaveControls />
+        <div class="space-y-3">
+          <div
+            class="rounded-lg border border-border/60 dark:border-border/40 bg-white/60 dark:bg-black/10 p-3 space-y-2 text-sm"
+          >
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-xs uppercase tracking-[0.18em] opacity-60">印记</span>
+              <span v-for="seal in summary.seals" :key="seal" class="chip-main font-songti text-xs">
+                {{ seal }}
+              </span>
+              <span v-if="!summary.seals.length" class="text-xs opacity-60">暂无</span>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-xs uppercase tracking-[0.18em] opacity-60">支线</span>
+              <span
+                v-for="tag in summary.tags"
+                :key="tag"
+                class="chip-side font-songti text-xs"
+                :class="typeTone['side']"
+              >
+                {{ tag }}
+              </span>
+              <span v-if="!summary.tags.length" class="text-xs opacity-60">暂无</span>
+            </div>
+          </div>
+          <TaskSaveControls />
+        </div>
       </div>
     </div>
 
@@ -206,15 +252,12 @@ const summary = computed(() => {
                 {{ taskTypeLabels[task.taskType] }}
               </span>
               <div class="text-lg font-semibold leading-tight flex items-center gap-2">
-                <div
-                  v-if="task.taskType === 'main'"
-                  class="px-0.5 border-2 rounded-md border-red-700 text-red-700 dark:border-red-500 dark:text-red-500 text-sm font-bold font-songti"
-                >
+                <div v-if="task.taskType === 'main'" class="text-sm chip-main font-songti">
                   {{ task.seal }}
                 </div>
                 <div
                   v-else-if="task.taskType === 'side'"
-                  class="px-0.5 rounded text-sm font-semibold font-songti"
+                  class="text-sm chip-side font-songti"
                   :class="typeTone[task.taskType]"
                 >
                   {{ task.tag }}
@@ -274,5 +317,15 @@ const summary = computed(() => {
 .list-leave-to {
   opacity: 0;
   transform: translateX(30px);
+}
+
+@import 'tailwindcss';
+
+.chip-main {
+  @apply px-0.5 border-2 rounded-md border-red-700 text-red-700 dark:border-red-500 dark:text-red-500 font-bold;
+}
+
+.chip-side {
+  @apply px-0.5 rounded font-semibold;
 }
 </style>
