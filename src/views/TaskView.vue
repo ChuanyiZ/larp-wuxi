@@ -97,9 +97,11 @@ const typeToneText: Record<TaskType, string> = {
   report: 'text-violet-700 dark:text-violet-300',
 }
 
-const styleBadge = 'inline-flex items-center gap-1 bg-white/60 dark:bg-black/10 rounded-full px-3 py-1'
+const styleBadge =
+  'inline-flex items-center gap-1 bg-white/80 dark:bg-black/40 rounded-full px-3 py-1'
 
-const styleChipMain = 'px-0.5 border-2 rounded-md border-red-700 text-red-700 dark:border-red-500 dark:text-red-500 font-bold'
+const styleChipMain =
+  'px-0.5 border-2 rounded-md border-red-700 text-red-700 dark:border-red-500 dark:text-red-500 font-bold'
 
 const styleChipSide = 'px-0.5 rounded font-semibold'
 
@@ -247,7 +249,7 @@ const summary = computed(() => {
             <span
               v-for="tag in summary.tags"
               :key="tag"
-              class="chip font-songti text-xs"
+              class="font-songti text-xs"
               :class="typeTone['side'] + ' ' + styleChipSide"
             >
               {{ tag }}
@@ -283,7 +285,11 @@ const summary = computed(() => {
                 {{ taskTypeLabels[task.taskType] }}
               </span>
               <div class="text-lg font-semibold leading-tight flex items-center gap-2">
-                <div v-if="task.taskType === 'main'" class="text-sm font-songti" :class="styleChipMain">
+                <div
+                  v-if="task.taskType === 'main'"
+                  class="text-sm font-songti"
+                  :class="styleChipMain"
+                >
                   {{ task.seal }}
                 </div>
                 <div
