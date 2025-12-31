@@ -24,10 +24,8 @@ type TypeFilter = TaskType | 'all'
 
 const statusFilter = ref<StatusFilter>('all')
 const typeFilter = ref<TypeFilter>('all')
-const summaryOpen = ref(true)
+const summaryOpen = ref(false)
 const taskStore = useTaskStore()
-
-const snapshotName = computed(() => taskStore.snapshotName)
 
 const visibleTasks = computed(() =>
   taskStore.tasks.filter((task) => {
@@ -37,19 +35,37 @@ const visibleTasks = computed(() =>
   }),
 )
 
-const statusFilterOptions: { value: StatusFilter; label: string }[] = [
+const statusFilterOptions = computed<{ value: StatusFilter; label: string }[]>(() => [
   { value: 'all', label: '全部状态' },
-  { value: 'todo', label: statusLabels.todo },
-  { value: 'in-progress', label: statusLabels['in-progress'] },
-  { value: 'done', label: statusLabels.done },
-]
+  {
+    value: 'todo',
+    label: `${statusLabels.todo}(${taskStore.tasks.filter((t) => t.status === 'todo').length})`,
+  },
+  {
+    value: 'in-progress',
+    label: `${statusLabels['in-progress']} (${taskStore.tasks.filter((t) => t.status === 'in-progress').length})`,
+  },
+  {
+    value: 'done',
+    label: `${statusLabels.done} (${taskStore.tasks.filter((t) => t.status === 'done').length})`,
+  },
+])
 
-const typeFilterOptions: { value: TypeFilter; label: string }[] = [
+const typeCounts = computed(() => {
+  const main = taskStore.tasks.filter((t) => t.taskType === 'main')
+  const side = taskStore.tasks.filter((t) => t.taskType === 'side')
+  return {
+    main: { total: main.length, done: main.filter((t) => t.status === 'done').length },
+    side: { total: side.length, done: side.filter((t) => t.status === 'done').length },
+  }
+})
+
+const typeFilterOptions = computed<{ value: TypeFilter; label: string }[]>(() => [
   { value: 'all', label: '全部类型' },
-  { value: 'main', label: taskTypeLabels.main },
-  { value: 'side', label: taskTypeLabels.side },
-  { value: 'report', label: taskTypeLabels.report },
-]
+  { value: 'main', label: `${taskTypeLabels.main} (${typeCounts.value.main.total})` },
+  { value: 'side', label: `${taskTypeLabels.side} (${typeCounts.value.side.total})` },
+  { value: 'report', label: `${taskTypeLabels.report}` },
+])
 
 const statusTone: Record<TaskStatus, string> = {
   todo: 'text-blue-500 dark:text-blue-200',
@@ -87,6 +103,7 @@ const updateStatus = (id: string, status: TaskStatus) => {
 
 const summary = computed(() => {
   const total = taskStore.tasks.length
+  const todo = taskStore.tasks.filter((t) => t.status === 'todo').length
   const inProgress = taskStore.tasks.filter((t) => t.status === 'in-progress').length
   const done = taskStore.tasks.filter((t) => t.status === 'done').length
   const rewards = taskStore.tasks
@@ -106,7 +123,23 @@ const summary = computed(() => {
         .map((t) => (t as TaskSide).tag as string),
     ),
   )
-  return { total, inProgress, done, rewards, seals, tags }
+  const mainDone = typeCounts.value.main.done
+  const mainTotal = typeCounts.value.main.total
+  const sideDone = typeCounts.value.side.done
+  const sideTotal = typeCounts.value.side.total
+  return {
+    total,
+    todo,
+    inProgress,
+    done,
+    rewards,
+    seals,
+    tags,
+    mainDone,
+    mainTotal,
+    sideDone,
+    sideTotal,
+  }
 })
 </script>
 
@@ -123,7 +156,7 @@ const summary = computed(() => {
             v-for="option in statusFilterOptions"
             :key="option.value"
             type="button"
-            class="px-3 py-1 text-sm transition-colors duration-200 flex items-center gap-1"
+            class="px-2 py-1 text-sm transition-colors duration-200 flex items-center gap-1"
             :class="[
               statusFilter === option.value
                 ? 'bg-surface-strong/80 dark:bg-surface-strong/60 font-semibold'
@@ -148,7 +181,7 @@ const summary = computed(() => {
             v-for="option in typeFilterOptions"
             :key="option.value"
             type="button"
-            class="px-3 py-1 text-sm transition-colors duration-200"
+            class="px-2 py-1 text-sm transition-colors duration-200"
             :class="[
               typeFilter === option.value
                 ? 'bg-surface-strong/80 dark:bg-surface-strong/60 font-semibold'
@@ -169,61 +202,52 @@ const summary = computed(() => {
         class="flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-border/60 dark:border-border/40 bg-surface-strong/60 dark:bg-surface-strong/40"
         @click="summaryOpen = !summaryOpen"
       >
-        <span>{{ summaryOpen ? '收起' : '展开' }}进度汇总</span>
+        <span>{{ summaryOpen ? '-' : '+' }}</span>
+        <span>进度汇总</span>
       </button>
 
       <div
         v-if="summaryOpen"
-        class="grid gap-3 lg:grid-cols-[2fr,3fr] items-start rounded-lg border border-border/60 dark:border-border/40 bg-surface-strong/50 dark:bg-surface-strong/30 p-4"
+        class="space-y-3 rounded-lg border border-border/60 dark:border-border/40 bg-surface-strong/50 dark:bg-surface-strong/30 p-2 text-xs lg:text-sm"
       >
-        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
-          <div class="rounded-md bg-white/60 dark:bg-black/10 p-3">
-            <p class="text-xs opacity-70">存档名称</p>
-            <p class="text-base font-semibold wrap-break-words">{{ snapshotName }}</p>
-          </div>
-          <div class="rounded-md bg-white/60 dark:bg-black/10 p-3">
-            <p class="text-xs opacity-70">任务总数</p>
-            <p class="text-xl font-semibold">{{ summary.total }}</p>
-          </div>
-          <div class="rounded-md bg-white/60 dark:bg-black/10 p-3">
-            <p class="text-xs opacity-70">进行中</p>
-            <p class="text-xl font-semibold">{{ summary.inProgress }}</p>
-          </div>
-          <div class="rounded-md bg-white/60 dark:bg-black/10 p-3">
-            <p class="text-xs opacity-70">已完成</p>
-            <p class="text-xl font-semibold">{{ summary.done }}</p>
-          </div>
-          <div class="rounded-md bg-white/60 dark:bg-black/10 p-3">
-            <p class="text-xs opacity-70">奖励累计</p>
-            <p class="text-xl font-semibold">{{ summary.rewards }}</p>
-          </div>
+        <div class="flex flex-wrap gap-2">
+          <span class="badge">
+            <span class="opacity-70">累积奖励</span>
+            <span class="font-semibold">¥{{ summary.rewards }}</span>
+          </span>
+          <span class="badge">
+            <span class="opacity-70">进行中</span>
+            <span class="font-semibold">{{ summary.inProgress }} / {{ summary.total }}</span>
+          </span>
+          <span class="badge">
+            <span class="opacity-70">已完成</span>
+            <span class="font-semibold">{{ summary.done }} / {{ summary.total }}</span>
+          </span>
+          <span class="badge">
+            <span class="opacity-70">主线</span>
+            <span class="font-semibold">{{ summary.mainDone }} / {{ summary.mainTotal }}</span>
+            <span
+              v-for="seal in summary.seals"
+              :key="seal"
+              class="chip chip-main font-songti text-xs"
+            >
+              {{ seal }}
+            </span>
+          </span>
+          <span class="badge">
+            <span class="opacity-70">支线</span>
+            <span class="font-semibold">{{ summary.sideDone }} / {{ summary.sideTotal }}</span>
+            <span
+              v-for="tag in summary.tags"
+              :key="tag"
+              class="chip chip-side font-songti text-xs"
+              :class="typeTone['side']"
+            >
+              {{ tag }}
+            </span>
+          </span>
         </div>
-        <div class="space-y-3">
-          <div
-            class="rounded-lg border border-border/60 dark:border-border/40 bg-white/60 dark:bg-black/10 p-3 space-y-2 text-sm"
-          >
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-xs uppercase tracking-[0.18em] opacity-60">印记</span>
-              <span v-for="seal in summary.seals" :key="seal" class="chip-main font-songti text-xs">
-                {{ seal }}
-              </span>
-              <span v-if="!summary.seals.length" class="text-xs opacity-60">暂无</span>
-            </div>
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-xs uppercase tracking-[0.18em] opacity-60">支线</span>
-              <span
-                v-for="tag in summary.tags"
-                :key="tag"
-                class="chip-side font-songti text-xs"
-                :class="typeTone['side']"
-              >
-                {{ tag }}
-              </span>
-              <span v-if="!summary.tags.length" class="text-xs opacity-60">暂无</span>
-            </div>
-          </div>
-          <TaskSaveControls />
-        </div>
+        <TaskSaveControls />
       </div>
     </div>
 
@@ -320,6 +344,10 @@ const summary = computed(() => {
 }
 
 @import 'tailwindcss';
+
+.badge {
+  @apply inline-flex items-center gap-1 bg-white/60 dark:bg-black/10 rounded-full px-3 py-1;
+}
 
 .chip-main {
   @apply px-0.5 border-2 rounded-md border-red-700 text-red-700 dark:border-red-500 dark:text-red-500 font-bold;
