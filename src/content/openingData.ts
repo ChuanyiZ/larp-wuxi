@@ -41,7 +41,7 @@ export const openingBlocks: OpeningNode[] = [
       },
       {
         type: 'list',
-        class: 'ps-8!',
+        class: 'ps-2! counter-traditional',
         items: [
           { text: '暗访牙行钱铺及诸兑换铺户，核对其印记字号、来往票据账簿' },
           { text: '访察运河交割、仓单船单之出入，验其盐引、关防真伪，有无影射夹带' },
